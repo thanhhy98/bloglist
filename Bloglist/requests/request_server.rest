@@ -1,0 +1,6 @@
+POST http://localhost:3002/api/blogs/61a5febac075f39137505870/comments
+Content-Type: application/json
+
+{
+    "comment": "Comment validation failed: comment: Path `comment` (`Co`) is shorter than the minimum allowed length (3)."
+}

@@ -1,0 +1,78 @@
+.safe {
+    padding : 10px;
+    border:  5px solid green;
+    border-radius: 5px;
+    background: rgb(187, 187, 187);
+    color: green
+}
+
+.danger {
+    padding : 10px;
+    border:  5px solid red;
+    border-radius: 5px;
+    background: rgb(187, 187, 187);
+    color: red;
+}
+
+.comments li {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    display: grid;
+    grid-template-columns: 70px auto;
+    list-style-type: none;
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 30px 15px;
+}
+
+.avatar {
+    object-fit: cover;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+#img-comment {
+    text-decoration: none;
+    color: black;
+}
+
+.comments li div div {
+    margin-bottom: 25px;
+}
+
+.detail {
+    padding: 20px;
+    line-height: 5px;
+    margin: 20px 0;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 
+.center form {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 50px 20px;
+    border-radius: 5px;
+    line-height: 20px !important
+}  
+
+
+
+* {
+    margin: 0;
+}
+
+
+.user-detail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    line-height: 30px !important
+}
+.user-detail  ul li { 
+    margin-top: 20px;
+}
