@@ -1,12 +1,16 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { TextField, Button, Typography, Paper, Box, Grid } from '@mui/material';
+import { addBlog } from '../reducers/blogsReducer';
+import { dangerAction, safeAction } from '../reducers/noticeReducer';
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = ({ usersHandle, users, user }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
 
+  const dispatch = useDispatch()
   const handleCreateBlog = async (e) => {
     e.preventDefault()
     const blog = {
@@ -18,7 +22,22 @@ const BlogForm = ({ createBlog }) => {
     setTitle('')
     setAuthor('')
     setUrl('')
-    await createBlog(blog)
+    try {
+      await dispatch(addBlog(blog, user));
+      const newBlog = users.map(u => {
+        if(u.username === user.username) {
+          return {
+            ...u,
+            blogs: [...u.blogs, blog]
+          }
+        }
+        return u
+      })
+      dispatch(safeAction(`a new blog ${blog.title}`, 2))
+      usersHandle(newBlog)
+    } catch {
+      dispatch(dangerAction(`a new blog ${blog.title} didnt created`, 2))
+    }
   }
 
   return (
@@ -66,6 +85,6 @@ const BlogForm = ({ createBlog }) => {
 }
 
 BlogForm.propTypes = {
-  createBlog: PropTypes.func.isRequired
+  usersHandle: PropTypes.func.isRequired
 }
 export default BlogForm

@@ -14,13 +14,14 @@ export const BlogList = ({ blog }) => {
   const dispatch = useDispatch()
   const likeButton = async (blog) => {
     const num = like ? -1 : 1;
-    const newBlog = {
+    const newwBlog = {
       ...blog,
       likes: blog.likes + num
     }
-    dispatch(addLike(newBlog))  
+    dispatch(addLike(newwBlog))  
     setLike(!like)  
   }
+
   return (
     <TableRow>
       <TableCell sx={{fontSize: '17px', p: 3.3}}>
@@ -41,26 +42,26 @@ export const BlogList = ({ blog }) => {
     </TableRow>
   )
 }
-export const Blog = ({ blog, addLike, removeBlog, user }) => {
+export const Blog = ({ blog, removeBlog, user }) => {
   const [like, setLike] = useState(false);
   const [comment, setComment] = useState('')
   const [show, setShow] = useState(false)
 
   const dispatch = useDispatch()
-
   const handleRemove = async (blog) => {
     const confim = window.confirm(`Are you sure to remove ${blog.title} by ${blog.author}?`)
     if(confim) {
       await removeBlog(blog)
     }
   }
+
   const handleAddLikes = async (blog) => {
     const num = like ? -1 : 1;
     const newBlog = {
       ...blog,
       likes: blog.likes + num
     }
-    await addLike(newBlog)
+    dispatch(addLike(newBlog))  
     setLike(!like)
   }
   const handleSubmitComment = async (e) => {

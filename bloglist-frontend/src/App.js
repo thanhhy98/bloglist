@@ -8,22 +8,65 @@ import BlogForm from './components/BlogForm';
 import Users from './components/Users';
 import UserDetail from './components/UserDetail';
 import { useDispatch, useSelector } from 'react-redux'
-import { safeAction } from './reducers/noticeReducer'
-import { addBlog, addLike, initBlogs, removeFromBlog } from './reducers/blogsReducer';
+import { initBlogs, removeFromBlog } from './reducers/blogsReducer';
 import { logOut, initUser } from './reducers/userReducer';
 import Register from './components/Register';
 import { Table, TableContainer, TableBody, Paper, Button,
-     Toolbar, Typography, AppBar, Box, Pagination, Stack } from '@mui/material';
+     Toolbar, Typography, AppBar, Box, Pagination, TextField, InputBase } from '@mui/material';
 import { Routes, Route, useMatch, Link, Navigate } from 'react-router-dom'
 import BookIcon from '@mui/icons-material/Book';
+import SearchIcon from '@mui/icons-material/Search';
 import LoginForm from './components/Login';
+import DropDown from './components/DropDown';
+import {styled, alpha} from '@mui/material/styles'
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  marginRight: '10px',
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(1),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '20ch',
+      },
+    },
+  },
+}));
 
 const App = () => {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
   const [users, setUsers] = useState([])
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState('')
 
   const dispatch = useDispatch()
   const showAlert = useSelector(state => state.showAlert)
@@ -33,9 +76,31 @@ const App = () => {
   if(user) {
     blogService.setToken(user.token)
   }
+  console.log(blogs)
   const sortByLikes = blogs.slice().sort((blog1, blog2) => blog2.likes - blog1.likes)
   const pagination = sortByLikes.slice((page - 1) * 5, page * 5)
   const blogLength = Math.ceil(blogs.length / 5)
+  const searchedBlogs = search 
+    ? blogs.filter(blog => {
+      let s = search.toLowerCase().split('')
+      let b = blog.title.split('')
+      let result = ''
+      b.forEach((item, index) => {
+        if(item.toLowerCase().localeCompare(s[index], 'en', {sensitivity: 'base'}) === 0) {
+          if(s[index]) {
+            result += s[index]
+          }
+        }   
+      })
+      if(result.toLowerCase() === search.toLowerCase()) {
+        return true
+      } else {
+        return false
+      }
+    }) 
+    : null
+
+  console.log(searchedBlogs)
   useEffect(() => {
     dispatch(initBlogs())
   }, [])
@@ -68,24 +133,6 @@ const App = () => {
     localStorage.removeItem('blogUser')
   }
 
-  const createBlog = async (blog) => {   
-    dispatch(addBlog(blog, user));
-    dispatch(safeAction(`a new blog ${blog.title}`, 2))
-    const newBlog = users.map(u => {
-      if(u.username === user.username) {
-        return {
-          ...u,
-          blogs: [...u.blogs, blog]
-        }
-      }
-      return u
-    })
-    setUsers(newBlog)
-  }
-  
-  const likeButton = async (blog) => {
-    dispatch(addLike(blog))    
-  }
 
   const removeBlog = async (blog) => {
     const id = blog.id;
@@ -97,13 +144,10 @@ const App = () => {
       <>
         <Typography variant="h4" sx={{textAlign: 'center'}}>Blogs</Typography>
         <Togglable>
-          <BlogForm createBlog={createBlog}
-            title={title}
-            author={author}
-            url={url}
-            handleTitle={e => setTitle(e.target.value)}
-            handleAuthor={e => setAuthor(e.target.value)}
-            handleUrl={e => setUrl(e.target.value)}/>
+          <BlogForm users={users}
+                    user={user}
+                    usersHandle={a => setUsers(a)}
+          />
         </Togglable>
         <TableContainer component={Paper} elevation={2}>
           <Table>
@@ -126,6 +170,25 @@ const App = () => {
           <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
             BlogList
           </Typography>
+          <div className='dropdown'>
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </Search>
+          {/* <TextField variant='filled' label="Search"
+            type="text"
+            autoComplete='off'
+            value={search}
+            onChange={e => setSearch(e.target.value)} /> */}
+            <DropDown blogs={searchedBlogs} handleSearch={() => setSearch('')}/>
+          </div>
           <Button color='inherit' component={Link} to='/'>blogs</Button>
           <Button color='inherit' component={Link} to='/users'>users</Button>
           {user 
@@ -146,7 +209,7 @@ const App = () => {
       <Routes>
         <Route path='blogs/:id' 
           element={blogDetail 
-            ? <Blog blog={blogDetail} addLike={likeButton} removeBlog={removeBlog} user={user}/>
+            ? <Blog blog={blogDetail} removeBlog={removeBlog} user={user}/>
             : <Navigate to='/' />}/>
         <Route path='users/:id' element={<UserDetail user={userDetail}/>} />
         <Route path='users' element={<Users users={users} />} />

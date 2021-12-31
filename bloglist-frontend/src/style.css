@@ -1,4 +1,4 @@
-.safe {
+/* .safe {
     padding : 10px;
     border:  5px solid green;
     border-radius: 5px;
@@ -12,7 +12,7 @@
     border-radius: 5px;
     background: rgb(187, 187, 187);
     color: red;
-}
+} */
 
 .comments li {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -75,4 +75,35 @@
 }
 .user-detail  ul li { 
     margin-top: 20px;
+}
+
+.dropdown {
+    position: relative;
+
+}
+
+.dropdown ul {
+    font-family: 'Calibri';
+    background-color: white;
+    position: absolute;
+    margin: 2px 0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+    border-radius: 2px;
+}
+
+.dropdown ul li {
+    word-wrap: break-word;
+    color: black;
+    z-index: 100;
+    margin: 0;
+    padding : 10px;
+    text-decoration: none;
+}
+
+.dropdown ul li:hover{
+    background-color: rgb(255, 255, 96);
+    cursor: pointer;
 }

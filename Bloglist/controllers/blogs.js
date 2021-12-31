@@ -49,7 +49,7 @@ blogRouter.post('/:id/comments', async (req, res, next) => {
     }
 })
 
-blogRouter.post('/', async(req, res) => {
+blogRouter.post('/', async(req, res, next) => {
     const body = req.body;
     const decodedToken = jwt.verify(req.token, process.env.SECRET);
     if(!req.token || !decodedToken.id) {
@@ -60,8 +60,8 @@ blogRouter.post('/', async(req, res) => {
     if(!user) {
         return res.status(404).json({error: 'not found'})
     }
-    if(!body.likes) {
-        return res.status(400).json({error: 'missing the likes'})
+    if(!body.title) {
+        return res.status(400).json({error: 'missing the title'})
     }
     const newBlog = {
         title: body.title,
